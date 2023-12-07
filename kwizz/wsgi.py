@@ -32,4 +32,4 @@ serverIP = "localhost"
 # serverIP = "192.168.208.29"
 # serverIP = "192.168.208.145"
 
-eventlet.wsgi.server(eventlet.listen((serverIP, 8000)), application)
+# eventlet.wsgi.server(eventlet.listen((serverIP, 8000)), application)
