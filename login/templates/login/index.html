@@ -1,0 +1,15 @@
+{% extends 'login/base.html' %}
+
+{% block title %}Login{% endblock title %}
+
+{% load static %}
+
+
+{% block body %}
+
+    <a href="{% url 'login:login' %}" class="btn bg-light-subtle border border-primary">
+      <img src="{% static 'login/google_icon.png' %}" alt="google_logo" width="50px">
+      Sign in with Google
+    </a>
+
+{% endblock body %}

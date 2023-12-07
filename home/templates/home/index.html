@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+    <main class="container my-4">
+
+        <div class="row" style="width: 90vmin; margin: auto;">
+          
+
+            <div class="card col mx-1" style="width: 18rem;">
+                <!-- <img src="{% static 'home/images/host.png' %}" class="card-img-top" alt="host"> -->
+                <div class="card-body">
+                <h5 class="card-title">Host a Quiz</h5>
+                <p class="card-text">Be a Host and create new quiz, manage quizzes.</p>
+                <a href="{% url 'host:index' %}" class="btn btn-primary">Host</a>
+                </div>
+            </div>
+
+            <div class="card col" style="width: 18rem;">
+                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                <div class="card-body">
+                <h5 class="card-title">Join a Quiz</h5>
+                <p class="card-text">Join a Quiz by entering Quiz Code of the Quiz.</p>
+                
+                <a role="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Join</a>
+
+                <!-- Modal -->
+                <form id="myForm">
+                  {% csrf_token %}
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Enter Quiz Code</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <input type="text" class="form-control" placeholder="hostname quiz_id" name="quiz_code" id="quiz_code">
+                        </div>
+                        <div class="modal-footer">
+
+                        <div class="alert alert-danger" role="alert" id="modalAlert" style="display: none;">
+                          
+                        </div>
+
+                          <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Join</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- recently joined quizzes -->
+
+        <div class="my-3">
+
+          <input type="hidden" id="quiz_start_idx" value="0">
+          <h4>Recently Joined Quizzes</h4>
+          <table class="table table-hover" id="quiz_table">
+            <thead>
+              <tr>
+                <!-- <th scope="col">Sr. No.</th> -->
+                <th scope="col">Quiz Code</th>
+                <th scope="col">Joined At</th>
+                <th scope="col">Result</th>
+              </tr>
+            </thead>
+            <tbody id="quiz_table_body">
+              
+              <div class="spinner-border" id="loader" role="status" style="position: fixed; left: 45%; z-index: 9999;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              
+            </tbody>
+          </table>
+
+          <button type="button" class="btn btn-primary" id="loadMoreBtn" onclick="fetchAndDisplay.call()" style="display: none; margin-left: auto;">Load more</button>
+
+        </div>
+
+
+        <!-- joined quiz modal -->
+        <div class="modal fade" id="joinedQuizModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="joinedQuizModalTitle">Result</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="joinedQuizCloseBtn"></button>
+              </div>
+              <div class="modal-body" id="joinedQuizModalBody">
+                <form method="post" id="joinedQuizForm">
+                  {% csrf_token %}
+                  <input type="hidden" id="quizCodeForResult" name="quizCode">
+                </form>
+
+                <div class="card-body">
+                  <h5 class="card-title" id="quiz_title_display">Title</h5>
+                  <p class="card-text">
+                    <h6>Correct: <span id="correct_answers">0</span>/<span id="total_questions">0</span></h6>
+                    <h6><span id="percentage">0</span>%</h6>
+                    <h6>Attempted Questions: <span id="attempted_questions">0</span></h6>
+                    <h6>Unattempted Questions: <span id="unattempted_questions">0</span></h6>
+                  </p>
+                </div>
+
+              </div>
+              <div class="modal-footer" style="justify-content: space-between;" id="joinedQuizModalFooter">
+                <div>
+                  <p>
+                    <h6>
+                      Time Spent:
+                      <span id="time_taken">00:00</span>
+                    </h6>
+                  </p>
+                </div>
+                <button type="button" class="btn btn-primary" id="result_infoBtn" onclick="showResult.call(this)">Check for Answers</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+    </main>
+
+    <script>
+
+      function validateAndSubmit(){
+
+        let quiz_code = document.getElementById('quiz_code').value;
+        if (quiz_code == ""){
+          return;
+        }
+
+        let pattern = /^[a-zA-Z]+\s\d{4}$/;
+        if(!pattern.test(quiz_code)){
+          document.getElementById("modalAlert").innerHTML = "QuizCode must be in format 'hostname quiz_id' e.g., aman 1000!";
+          document.getElementById("modalAlert").style.display = "block";
+          return;
+        }
+
+        quizExists()
+
+      }
+
+      function quizExists(){
+
+        let quiz_code = document.getElementById('quiz_code').value;
+
+        return (fetch(`{% url 'client:index' %}?quiz_code=${quiz_code}`)
+        .then(response=>response.json())
+        .then(data=>{
+          if(data.message=="Quiz found!"){
+            document.getElementById("modalAlert").style.display = "none";
+            submitForm();
+          }
+          else{
+            document.getElementById("modalAlert").innerHTML = data.message;
+            document.getElementById("modalAlert").style.display = "block";
+          }
+        }));
+
+      }
+
+      function submitForm(){
+
+        // console.log(":)");
+        let quiz_code = document.getElementById('quiz_code').value;
+
+        let form = document.getElementById('myForm');
+        form.action = "{% url 'client:index' %}"
+        form.method = "POST"
+        form.submit();
+
+      }
+
+    </script>
+
+
+    <script>
+
+      let data = null;
+      let fetchedQuizTitle = null;
+
+      function displayQuizBody(){
+          // console.log(data);
+
+          quiz_table_body.innerHTML = "";
+          
+          let j = 1;
+          for(let i=0; i<(Object.keys(data).length); i++){
+              let row = document.createElement("tr");
+              
+              row.setAttribute("onclick", "joinedQuizModal.call(this)");
+              row.setAttribute("data-bs-toggle", "modal");
+              row.setAttribute("data-bs-target", "#joinedQuizModal");
+
+              let quizCodeField = document.createElement("input");
+              quizCodeField.setAttribute("type", "hidden");
+              quizCodeField.value = `${data[i].clientquiz_host_id} ${data[i].clientquiz_quiz_id}`;
+
+              
+              row.appendChild(quizCodeField);
+
+              let quizPKField = document.createElement("input");
+              quizPKField.setAttribute("type", "hidden");
+              quizPKField.value = `${(data[i].id)}`;
+              row.appendChild(quizPKField);
+
+
+              // let sr_no_elem = document.createElement("th")
+              // sr_no_elem.innerHTML=j;
+              // row.appendChild(sr_no_elem);
+
+              let quiz_code_elem = document.createElement("th");
+              quiz_code_elem.innerHTML=`${data[i].clientquiz_host_id} ${data[i].clientquiz_quiz_id}`;
+              row.appendChild(quiz_code_elem);
+
+              let quiz_joined_at_elem = document.createElement("td");
+              let joined_at = new Date(data[i].clientquiz_end_time);
+              var options = {year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'};
+              joined_at = joined_at.toLocaleDateString("en-IN", options);
+              quiz_joined_at_elem.innerHTML= joined_at;
+              row.appendChild(quiz_joined_at_elem);
+
+
+              let percentage = (parseInt(data[i].clientquiz_correct_answers)/parseInt(data[i].clientquiz_total_questions))*100;
+              percentage = percentage.toFixed(2);
+              let percentage_elem = document.createElement("td")
+              percentage_elem.innerHTML=`${percentage}%`;
+              row.appendChild(percentage_elem);
+              
+              
+              quiz_table_body.appendChild(row);
+
+              j += 1;
+            
+          }
+
+      }
+
+      function fetchAndDisplay(){
+          let quiz_start_idx = document.getElementById("quiz_start_idx");
+
+          document.getElementById("loader").style.display = "block";
+          fetch("{% url 'client:get_client_quizzes' %}", {
+              method: "POST",
+              body: JSON.stringify({"start": parseInt(quiz_start_idx.value)})
+          })
+          .then(response=>response.json())
+          .then(fetchedData=>{
+
+              storeFetchedData(fetchedData);
+              
+              displayQuizBody();
+
+              quiz_start_idx.value = parseInt(quiz_start_idx.value) + 10;
+
+              fetch("{% url 'client:getClientQuizCount' %}")
+              .then(response=>response.json())
+              .then(quizCountData=>{
+                if(data.length < quizCountData.total){
+                  document.getElementById("loadMoreBtn").style.display = "block";
+                }
+                else{
+                  document.getElementById("loadMoreBtn").style.display = "none";
+                }
+
+                document.getElementById("loader").style.display = "none";
+              })
+
+          })
+      }
+
+      fetchAndDisplay();
+
+      function storeFetchedData(fetchedData){
+          if(data==null){
+            data = fetchedData;
+          }
+          else{
+            data = [...data, ...fetchedData];
+          }
+      }
+
+
+      function showResult(){
+          const quiz_code = document.getElementById("quizCodeForResult").value;
+          const host_id = quiz_code.split(" ")[0]
+          const quiz_id = quiz_code.split(" ")[1]
+
+          let link = "{% url 'client:result_info' 'host_id' 123 %}"
+          .replace("host_id", host_id)
+          .replace("123", quiz_id);
+
+          window.open(link);
+          
+      }
+
+      function saveTitle(data){
+        fetchedQuizTitle = data.quiz_title;
+      }
+
+      function joinedQuizModal(){
+        document.getElementById("quizCodeForResult").value = this.children[0].value;
+
+        const quiz_code = document.getElementById("quizCodeForResult").value;
+
+
+        document.getElementById("loader").style.display = "block";
+        fetch(`{% url 'client:getQuizTitle' %}?quiz_code=${quiz_code}`)
+        .then(response=>response.json())
+        .then(fetchedData=>{
+          saveTitle(fetchedData);
+          document.getElementById("quiz_title_display").innerHTML = fetchedQuizTitle;
+
+
+          let quizCode = this.children[0].value;
+          // console.log(quizCode)
+          let host_id = quizCode.split(" ")[0];
+          let quiz_id = quizCode.split(" ")[1];
+
+          let quiz_id_idx = null;
+          for(let i=0; i<data.length; i++){
+            let quiz = data[i];
+
+            if(host_id == quiz.clientquiz_host_id && quiz_id == quiz.clientquiz_quiz_id){
+              quiz_id_idx = i;
+              break;
+            }
+          }
+
+          // console.log(data)
+          // console.log(quiz_id_idx)
+
+          document.getElementById("joinedQuizModalTitle").innerHTML = quizCode;
+          document.getElementById("correct_answers").innerHTML = data[quiz_id_idx].clientquiz_correct_answers
+          document.getElementById("total_questions").innerHTML = data[quiz_id_idx].clientquiz_total_questions
+          document.getElementById("attempted_questions").innerHTML = data[quiz_id_idx].clientquiz_attempted_questions
+          document.getElementById("unattempted_questions").innerHTML = parseInt(data[quiz_id_idx].clientquiz_total_questions) - parseInt(data[quiz_id_idx].clientquiz_attempted_questions);
+          let percentage =  (parseInt(data[quiz_id_idx].clientquiz_correct_answers) / parseInt(data[quiz_id_idx].clientquiz_total_questions)) * 100;
+          percentage = percentage.toFixed(2);
+          document.getElementById("percentage").innerHTML = percentage;
+
+          const time_taken = data[quiz_id_idx].clientquiz_time_taken.split(".")[0];
+          document.getElementById("time_taken").innerHTML = time_taken;
+
+          fetch("{% url 'home:getHostQuizHeldStatus' %}", {
+            method: "POST",
+            body: JSON.stringify({"quiz_code": quizCode})
+          })
+          .then(response=>response.json())
+          .then(data=>{
+            if(data.quiz_is_held){
+              document.getElementById("result_infoBtn").style.display = "block";
+            }
+            else{
+              document.getElementById("result_infoBtn").style.display = "none";
+            }
+          })
+
+          document.getElementById("loader").style.display = "none";
+
+        })
+        .catch(error=>{
+
+          document.getElementById("joinedQuizModalTitle").innerHTML = "Not found!";
+          document.getElementById("joinedQuizModalBody").innerHTML = `<p style="color: red;">Requested quiz is deleted by the Host!</p>`;
+          document.getElementById("joinedQuizModalFooter").innerHTML = "";
+
+          document.getElementById("loader").style.display = "none";
+        })
+
+        
+      }
+
+
+    </script>
+
+
+{% endblock body %}

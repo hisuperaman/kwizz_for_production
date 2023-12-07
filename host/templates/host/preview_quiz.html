@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Preview{% endblock title %}
+
+{% block body %}
+    <main class="container my-4">
+
+        <form id="myForm">
+            {% csrf_token %}
+            <input type="hidden" name="host_id" id="host_id" value="{{host_id}}">
+            <input type="hidden" name="quiz_id" id="quiz_id" value="{{quiz_id}}">
+        </form>
+
+        <div id="quizBody" class="container">
+
+            <h1 class="display-5" id="quizTitle">
+
+            </h1>
+            
+            
+            
+        </div>
+
+        <div>
+            <p id="timer" style="display: inline; float: right;" class="my-2">00:00</p>
+        </div>
+    
+    </main>
+    
+    <script>
+
+        let current_question = 0;
+
+        let user_choices = {};
+        let totalSeconds;
+
+        let formData = new FormData(document.getElementById("myForm"));
+        // console.log(formData);
+
+        let data = null;
+
+        fetch("{% url 'client:get_quiz' %}", {
+            method: "POST",
+            body: formData
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            // console.log(data);
+
+            // saving data
+            saveData(data);
+
+            // displaying data
+            for(let i=0; i<data.question_set.length; i++){
+                displayQuizData(i);
+            }
+        })
+
+        function saveData(fetchedData){
+            data = fetchedData;
+        }
+
+        function createElementFromHTML(htmlString){
+            const parser = new DOMParser();
+            const parsedHTML = parser.parseFromString(htmlString, "text/html")
+            return parsedHTML.body.firstChild;
+        }
+
+        function displayQuizData(current_question){
+
+            quizTitle.innerHTML = data.quiz_title;
+
+
+            let question_str = `<p>
+                                    Q.<span></span>.
+                                </p>`;
+            
+            let questionElem = createElementFromHTML(question_str);
+
+            let choicesBlock = document.createElement("div");
+            let choicesBlockList = document.createElement("ul");
+            choicesBlockList.setAttribute("class", "list-group");
+            choicesBlock.appendChild(choicesBlockList);
+
+            let quizBody = document.getElementById("quizBody");
+            quizBody.appendChild(questionElem);
+            quizBody.appendChild(choicesBlock);
+
+            questionElem.innerHTML += `${data.question_set[current_question].question_text}`;
+            questionElem.children[0].innerHTML = current_question+1;
+
+            // displaying timer
+            let totalSeconds = (data.quiz_timer_minutes)*60;
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = Math.floor(totalSeconds % 60);
+            
+            let timerString = `${(minutes<10)?(0):("")}${minutes}:${(seconds<10)?(0):("")}${seconds}`;
+            document.getElementById("timer").innerHTML = timerString;
+
+            (data.question_set[current_question].choice_set).forEach(choice => {
+                // console.log(choice.is_correct_choice);
+                let choiceEle = `<li class="list-group-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="q${current_question+1}_choice" value="${choice.choice_id}" id="q${current_question+1}choice${choice.choice_id}">
+                                        <label class="form-check-label" for="q${current_question+1}choice${choice.choice_id}" style="display: block;">
+                                            ${choice.choice_text}
+                                        </label>
+                                    </div>
+                                </li>`;
+                choiceEle = createElementFromHTML(choiceEle);
+
+                choiceEle.children[0].children[0].style.pointerEvents = "none";
+                choiceEle.children[0].children[1].style.pointerEvents = "none";
+
+                    
+                if(choice.is_correct_choice){
+                    choiceEle.children[0].children[1].innerHTML += `<span style="float: right;">
+                                                                        Correct answer
+                                                                    </span>`;
+                    choiceEle.style.backgroundColor = "green";
+                    choiceEle.children[0].children[0].checked = true;
+                }
+
+                choicesBlockList.appendChild(choiceEle);
+                
+            });
+
+            
+        }
+
+
+    </script>
+
+{% endblock body %}

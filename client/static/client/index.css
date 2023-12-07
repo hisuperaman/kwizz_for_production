@@ -1,0 +1,24 @@
+.choiceItem{
+
+}
+
+.choiceLabel{
+    
+}
+
+.choiceRadio{
+    
+}
+
+.choiceItem:hover{
+    background-color: green;
+    cursor: pointer;
+}
+
+.choiceLabel:hover{
+    cursor: inherit;
+}
+
+.choiceRadio:hover{
+    cursor: inherit;
+}

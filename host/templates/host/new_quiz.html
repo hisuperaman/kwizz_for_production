@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Host-New{% endblock title %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'host/new_quiz_style.css' %}">{% endblock css %}
+
+{% block body %}
+    <main class="container-fluid my-4">
+
+        <form id="myForm">
+        
+        {% csrf_token %}
+        <div class="container-fluid">
+            <div class="input-group mb-3" style="display: inline-flex;">
+                <input type="text" name="quiz_title" class="form-control mx-2" placeholder="quiz title goes here" id="quiz_title" required>
+                
+                <select class="form-select mx-2" name="quiz_timer_minutes" onchange="showOtherOption.call(this)" id="quiz_timer_minutes">
+                    <option selected>Select Quiz Timer</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="30">30</option>
+                    <option value="60">60</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <div class="input-group mb-3 my-2" id="timerOtherBlock" style="display: none;">
+                    <input type="number" class="form-control" placeholder="Other" id="timerOther" name="timerOther">
+                </div>
+
+            </div>
+            
+            <div id="question_field">
+
+                <div class="container-fluid" class="questions">
+                    <h5 class="my-0">Q.<span id="latest_question_no">1</span>.
+                        <div class="input-group mb-3 w-75" style="display: inline-flex;">
+                            <input type="text" name="question1" class="form-control" placeholder="question title goes here" required>
+                            
+                            <button type="button" class="input-group-text" id="new_question_btn" onclick="new_question_click(event)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16" style="pointer-events: none;">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </h5>
+
+                    <h6 class="container"><span class="choice_no">1</span>.
+                        <div class="input-group mb-3 w-75" style="display: inline-flex;">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="question1_choice_correct" value="0" checked>
+                            </div>
+                            <input type="text" name="question1_choice" class="form-control" placeholder="choice goes here" required>
+                            <button type="button" class="input-group-text" onclick="new_choice_click(event)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16" style="pointer-events: none;">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </h6>
+                </div>
+
+            </div>
+
+            <input type="hidden" name="no_of_questions" id="no_of_questions" value="1">
+            <button type="submit" class="btn btn-success" style="float: right;">Create</button>
+            
+            <button type="button" class="btn btn-primary"  onclick="createFromPrevious.call(this)">Replicate Quiz</button>
+
+        </div>
+        </form>
+
+        <br>
+        
+        <div class="alert alert-primary" role="alert" id="validateAlert" style="display: none;">
+            
+        </div>
+
+        <!-- quiz submission modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Saved</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="saveAlertBody">
+                  Quiz Saved!
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+        <!-- create from previous quiz modal -->
+        <input type="hidden" id="previously_held_start_idx" value="0">
+        <div class="modal fade" id="previousModal"  data-bs-backdrop="static" tabindex="-1" aria-labelledby="previousModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="previousModalLabel">Replicate Quiz</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="previousModalCloseBtn"></button>
+                </div>
+                <div class="modal-body" id="previousModalBody">
+                    <table class="table table-hover" id="quiz_table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Quiz No.</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Preview</th>
+                            <th scope="col">Create</th>
+                          </tr>
+                        </thead>
+                        <tbody id="quiz_table_body">
+                          
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-primary" id="loadMoreBtn" onclick="loadMoreBtnClick.call()" style="display: none; margin-left: auto;">Load more</button>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999; display: none;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+
+
+    </main>
+
+    <script src="{% static 'host/new_quiz_script.js' %}"></script>
+    <script>
+
+        function showOtherOption(){
+            let timerOtherBlock = document.getElementById("timerOtherBlock");
+            let timerOther = document.getElementById("timerOther");
+
+            if(this.value == 'other'){
+
+                timerOtherBlock.style.display = "inline-flex";
+                timerOther.required = true;
+
+            }
+            else{
+                timerOtherBlock.style.display = "none";
+                timerOther.required = false;
+            }
+        }
+
+
+        function validateForm(){
+            let questions = document.querySelectorAll(".questions");
+            
+            for(let i = 0; i < questions.length; i++){
+                if(questions[i].childElementCount < 3){
+                    document.getElementById("validateAlert").style.display = "block";
+                    document.getElementById("validateAlert").innerHTML = "Should be more than 1 choice!";
+                    return false;
+                }
+            }
+
+            if(isNaN(document.getElementById("quiz_timer_minutes").value)){
+                if(document.getElementById("quiz_timer_minutes").value != "other"){
+                    document.getElementById("validateAlert").style.display = "block";
+                    document.getElementById("validateAlert").innerHTML = "Please select Quiz Timer!";
+                    return false;
+                }
+            }
+
+            else if(document.getElementById("no_of_questions").value < 2){
+                document.getElementById("validateAlert").style.display = "block";
+                document.getElementById("validateAlert").innerHTML = "Should be more than 1 question!";
+                return false;
+            }
+            
+
+            document.getElementById("validateAlert").style.display = "none";
+            return true;
+        }
+
+
+        document.getElementById("myForm").addEventListener("submit", (e)=>{
+
+            e.preventDefault();
+
+            if(!validateForm()){
+                // console.log("error")
+                return;
+            }
+
+            let formData = new FormData(document.getElementById("myForm"));
+
+            document.getElementById("loader").style.display = "block";
+            fetch("{% url 'host:new_quiz' %}", {
+                method: 'POST',
+                body: formData
+            })
+            .then(response=>response.json())
+            .then(data=>{
+                // console.log(data.message);
+                document.getElementById("myForm").reset();
+                const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+                myModal.show();
+                document.getElementById("saveAlertBody").innerHTML = data.message;
+                if(data.error!=null){
+                    document.getElementById("exampleModalLabel").innerHTML = "Error";
+                }
+                
+                document.getElementById("loader").style.display = "none";
+            })
+            .catch(error=>console.error("Error", error));
+
+        });
+
+        document.getElementById('exampleModal').addEventListener("hidden.bs.modal", (e)=>{
+            location.href = "{% url 'host:index' %}";
+        })
+
+
+
+        let quiz_table = document.getElementById("quiz_table");
+        let quiz_table_body = document.getElementById("quiz_table_body");
+        let data = null;
+
+        function displayQuizBody(isHeld){
+            quiz_table_body.innerHTML = "";
+            
+            for(let i=0; i<(Object.keys(data).length); i++){
+              let row = document.createElement("tr");
+
+
+              if(data[i].quiz_is_held == isHeld){
+                let quizCodeField = document.createElement("input");
+                quizCodeField.setAttribute("type", "hidden");
+                quizCodeField.value = `${data[i].quiz_host_id} ${data[i].quiz_id}`;
+                row.setAttribute("id", `${data[i].quiz_host_id}${data[i].quiz_id}`);
+                
+                row.appendChild(quizCodeField);
+
+                let quizPKField = document.createElement("input");
+                quizPKField.setAttribute("type", "hidden");
+                quizPKField.value = `${(data[i].quiz_id)-1000}`;
+                row.appendChild(quizPKField);
+
+
+                let quiz_id_elem = document.createElement("th")
+                quiz_id_elem.innerHTML=data[i].quiz_id
+                row.appendChild(quiz_id_elem);
+
+                let quiz_title = document.createElement("td");
+                quiz_title.innerHTML=data[i].quiz_title;
+                row.appendChild(quiz_title);
+
+                let quiz_preview_elem = document.createElement("td");
+                let quiz_preview = `<button type="button" class="btn btn-primary" onclick="previewClick.call(this)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                        </svg>
+                                    </button>`;
+                quiz_preview_elem.innerHTML = quiz_preview;
+                row.appendChild(quiz_preview_elem);
+
+                let quiz_create_elem = document.createElement("td");
+                let quiz_create = `<button type="button" class="btn btn-primary" onclick="createClick.call(this)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                                        </svg>
+                                    </button>`;
+                quiz_create_elem.innerHTML = quiz_create;
+                row.appendChild(quiz_create_elem);
+                
+                
+                quiz_table_body.appendChild(row);
+              }
+            }
+
+            fetch("{% url 'host:getPreviouslyHeldQuizCount' %}")
+            .then(response=>response.json())
+            .then(quizCountData=>{
+                // console.log(`${quizCountData.total} ---- ${data.length}`)
+                quiz_count = quizCountData.total;
+                if(data.length < quizCountData.total){
+                    document.getElementById("loadMoreBtn").style.display = "block";
+                }
+                else{
+                    document.getElementById("loadMoreBtn").style.display = "none";
+                }
+            });
+
+        }
+
+        function storeFetchedData(fetchedData){
+            if(data==null){
+                data = fetchedData;
+            }
+            else{
+                data = [...data, ...fetchedData];
+            }
+        }
+
+        let quiz_count = null;
+        function fetchAndDisplay(){
+            let previously_held_start_idx = document.getElementById("previously_held_start_idx");
+
+            if(quiz_count==null || quiz_count>data.length){
+                fetch("{% url 'host:getPreviouslyHeldQuizzes' %}", {
+                    method: "POST",
+                    body: JSON.stringify({"start": parseInt(previously_held_start_idx.value)})
+                })
+                .then(response=>response.json())
+                .then(data=>{
+
+                    storeFetchedData(data);
+                    // console.log("fetching");
+
+                    let isHeld = true;
+                    
+                    displayQuizBody(isHeld);
+
+                    previously_held_start_idx.value = parseInt(previously_held_start_idx.value) + 10;
+                    
+                    document.getElementById("loader").style.display = "none";
+                });
+            }
+            else{
+                document.getElementById("loader").style.display = "none";
+            }
+        }
+
+        function createFromPrevious(){
+
+            document.getElementById("loader").style.display = "block";
+
+            fetchAndDisplay();
+
+            const myModal = new bootstrap.Modal(document.getElementById('previousModal'));
+            myModal.show();
+
+        }
+
+        function loadMoreBtnClick(){
+            fetchAndDisplay();
+        }
+
+
+        function previewClick(){
+            let quiz_code = this.parentElement.parentElement.children[0].value;
+            let host_id = quiz_code.split(" ")[0];
+            let quiz_id = quiz_code.split(" ")[1];
+
+            let link = "{% url 'host:preview' 'host_id' 123 %}"
+            .replace("host_id", host_id)
+            .replace("123", quiz_id);
+            window.location.href =  link;
+      }
+
+      const getQuizURL = "{% url 'client:get_quiz' %}";
+
+    </script>
+
+    <script src="{% static 'host/create_from_existing.js' %}"></script>
+{% endblock body %}

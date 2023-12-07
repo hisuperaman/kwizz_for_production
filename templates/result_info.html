@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Result{% endblock title %}
+
+{% block body %}
+    <main class="container my-4">
+
+        <form id="myForm">
+            {% csrf_token %}
+            <input type="hidden" name="host_id" id="host_id" value="{{host_id}}">
+            <input type="hidden" name="quiz_id" id="quiz_id" value="{{quiz_id}}">
+            <input type="hidden" name="client_id" id="client_id" value="{{client_id}}">
+        </form>
+
+        <div id="quizBody" class="container">
+
+            <h1 class="display-4" id="quizTitle">
+
+            </h1>
+            
+            
+            
+        </div>
+
+        <div>
+            <p id="timer" style="display: inline; float: right;" class="my-2">00:00</p>
+        </div>
+    
+    </main>
+    
+    <script>
+
+        let current_question = 0;
+
+        let user_choices = {};
+        let totalSeconds;
+
+        let formData = new FormData(document.getElementById("myForm"));
+        // console.log(formData);
+
+        let data = null;
+        let clientData = null;
+
+        fetch("{% url 'client:get_quiz' %}", {
+            method: "POST",
+            body: formData
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            // console.log(data);
+
+            // saving data
+            saveData(data);
+
+            return fetch("{% url 'client:get_client_quiz' %}", {
+                method: "POST",
+                body: formData
+            })
+        })
+
+        .then(response=>response.json())
+        .then(client_data=>{
+            // saving client data
+            saveClientData(client_data);
+            // console.log(client_data)
+
+            // displaying data
+            for(let i=0; i<data.question_set.length; i++){
+                displayQuizData(i);
+            }
+        })
+
+
+        function saveClientData(fetchedData){
+            clientData = fetchedData;
+        }
+
+        function saveData(fetchedData){
+            data = fetchedData;
+        }
+
+        function createElementFromHTML(htmlString){
+            const parser = new DOMParser();
+            const parsedHTML = parser.parseFromString(htmlString, "text/html")
+            return parsedHTML.body.firstChild;
+        }
+
+        function displayQuizData(current_question){
+
+            quizTitle.innerHTML = data.quiz_title;
+
+
+            let question_str = `<p class="mt-4">
+                                    Q.<span></span>.
+                                </p>`;
+            
+            let questionElem = createElementFromHTML(question_str);
+
+            let choicesBlock = document.createElement("div");
+            let choicesBlockList = document.createElement("ul");
+            choicesBlockList.setAttribute("class", "list-group");
+            choicesBlock.appendChild(choicesBlockList);
+
+            let quizBody = document.getElementById("quizBody");
+            quizBody.appendChild(questionElem);
+            quizBody.appendChild(choicesBlock);
+
+            questionElem.innerHTML += `${data.question_set[current_question].question_text}`;
+            questionElem.children[0].innerHTML = current_question+1;
+
+            // displaying timer
+            let clientTimerString = clientData.clientquiz_time_taken;
+            clientTimerString = clientTimerString.split(".");
+
+            let clientTimerComponents = clientTimerString[0].split(":");
+            let clientTimerHours = clientTimerComponents[0];
+            let clientTimerMinutes = clientTimerComponents[1];
+            let clientTimerSeconds = clientTimerComponents[2];
+
+            let newClientTimer = `${clientTimerHours}:${clientTimerMinutes}:${clientTimerSeconds}`;
+            document.getElementById("timer").innerHTML = newClientTimer;
+
+            (data.question_set[current_question].choice_set).forEach(choice => {
+                // console.log(choice.is_correct_choice);
+                let choiceEle = `<li class="list-group-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="q${current_question+1}_choice" value="${choice.choice_id}" id="q${current_question+1}choice${choice.choice_id}">
+                                        <label class="form-check-label" for="q${current_question+1}choice${choice.choice_id}" style="display: block;">
+                                            ${choice.choice_text}
+                                        </label>
+                                    </div>
+                                </li>`;
+                choiceEle = createElementFromHTML(choiceEle);
+
+                choiceEle.children[0].children[0].style.pointerEvents = "none";
+                choiceEle.children[0].children[1].style.pointerEvents = "none";
+
+                try{
+                    let clientchoice_id = clientData.clientquestion_set[current_question].clientchoice_set[0].clientchoice_choice_id;
+                    // console.log(clientchoice_id)
+                    // console.log(choice.choice_id)
+
+                    if(clientchoice_id == choice.choice_id){
+                        choiceEle.children[0].children[0].checked = true;
+                        choiceEle.children[0].children[1].innerHTML += `<span style="float: right;">
+                                                                            Your answer
+                                                                        </span>`;
+                    }
+                    
+                    if(choice.is_correct_choice && (clientchoice_id != choice.choice_id)){
+                        choiceEle.children[0].children[1].innerHTML += `<span style="float: right;">
+                                                                            Correct answer
+                                                                        </span>`;
+                    }
+
+                    if((!choice.is_correct_choice) && (clientchoice_id == choice.choice_id)){
+                        // console.log("hi")
+                        choiceEle.style.backgroundColor = "red";
+                    }
+                    else if((choice.is_correct_choice) && (clientchoice_id == choice.choice_id)){
+                        choiceEle.style.backgroundColor = "green";
+                        
+                    }
+                }
+                catch{
+                    if(choice.is_correct_choice){
+                        choiceEle.children[0].children[1].innerHTML += `<span style="float: right;">
+                                                                                Correct answer
+                                                                        </span>`;
+                    }
+                    else{
+                        questionElem.innerHTML += `<div style="float: right; color: red;">
+                                                            Unattempted
+                                                    </div>`;
+                    }
+                }
+
+                choicesBlockList.appendChild(choiceEle);
+                
+            });
+            
+        }
+
+
+    </script>
+
+{% endblock body %}

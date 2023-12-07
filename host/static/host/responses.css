@@ -1,0 +1,7 @@
+.usernameLinks{
+    color: white;
+}
+
+.usernameLinks:hover{
+    color: rgb(86, 86, 244);
+}

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Host-New{% endblock title %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'host/new_quiz_style.css' %}">{% endblock css %}
+
+{% block body %}
+    <main class="container-fluid my-4">
+
+        <form id="myForm">
+        
+        {% csrf_token %}
+        <input type="hidden" name="host_id" value="{{host_id}}">
+        <input type="hidden" name="quiz_id" value="{{quiz_id}}">
+
+        <div class="container-fluid">
+            <div class="input-group mb-3" style="display: inline-flex;">
+                <input type="text" name="quiz_title" class="form-control mx-2" placeholder="quiz title goes here" id="quiz_title">
+                
+                <select class="form-select mx-2" name="quiz_timer_minutes" onchange="showOtherOption.call(this)" id="quiz_timer_minutes">
+                    <option selected>Select Quiz Timer</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="30">30</option>
+                    <option value="60">60</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <div class="input-group mb-3 my-2" id="timerOtherBlock" style="display: none;">
+                    <input type="number" class="form-control" placeholder="Other" id="timerOther" name="timerOther">
+                </div>
+
+            </div>
+            
+            <div id="question_field">
+
+                <div class="container-fluid" class="questions">
+                    <h5 class="my-0">Q.<span id="latest_question_no">1</span>.
+                        <div class="input-group mb-3 w-75" style="display: inline-flex;">
+                            <input type="text" name="question1" class="form-control" placeholder="question title goes here">
+                            
+                            <button type="button" class="input-group-text" id="new_question_btn" onclick="new_question_click(event)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16" style="pointer-events: none;">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </h5>
+
+                    <h6 class="container"><span class="choice_no">1</span>.
+                        <div class="input-group mb-3 w-75" style="display: inline-flex;">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" name="question1_choice_correct" value="0" checked>
+                            </div>
+                            <input type="text" name="question1_choice" class="form-control" placeholder="choice goes here">
+                            <button type="button" class="input-group-text" onclick="new_choice_click(event)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16" style="pointer-events: none;">
+                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </h6>
+                </div>
+
+            </div>
+
+            <input type="hidden" name="no_of_questions" id="no_of_questions" value="1">
+            <button type="submit" class="btn btn-primary">Save and update</button>
+            
+
+        </div>
+        </form>
+
+        <!-- quiz submission modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Saved</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="saveAlertBody">
+                  Quiz Saved!
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999; display: block;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+
+
+    </main>
+
+    <script src="{% static 'host/new_quiz_script.js' %}"></script>
+    <script>
+
+        function showOtherOption(){
+            let timerOtherBlock = document.getElementById("timerOtherBlock");
+            let timerOther = document.getElementById("timerOther");
+
+            if(this.value == 'other'){
+
+                timerOtherBlock.style.display = "inline-flex";
+                timerOther.required = true;
+
+            }
+            else{
+                timerOtherBlock.style.display = "none";
+                timerOther.required = false;
+            }
+        }
+
+
+        document.getElementById("myForm").addEventListener("submit", (e)=>{
+
+            e.preventDefault();
+
+            let formData = new FormData(document.getElementById("myForm"));
+
+            document.getElementById("loader").style.display = "block";
+            fetch("{% url 'host:editQuiz' %}", {
+                method: 'POST',
+                body: formData
+            })
+            .then(response=>response.json())
+            .then(data=>{
+                // console.log(data.message);
+                document.getElementById("myForm").reset();
+                const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+                myModal.show();
+                document.getElementById("saveAlertBody").innerHTML = data.message;
+                if(data.error!=null){
+                    document.getElementById("exampleModalLabel").innerHTML = "Error";
+                }
+                
+                document.getElementById("loader").style.display = "none";
+            })
+            .catch(error=>console.error("Error", error));
+
+        });
+
+        document.getElementById('exampleModal').addEventListener("hidden.bs.modal", (e)=>{
+            location.href = "{% url 'host:index' %}";
+        })
+
+        const getQuizURL = "{% url 'client:get_quiz' %}";
+        const hostIndexURL = "{% url 'host:index' %}";
+
+    </script>
+
+    <script src="{% static 'host/edit_quiz.js' %}"></script>
+
+    <script>
+        let host_id = "{{host_id}}";
+        let quiz_id = "{{quiz_id}}";
+        displayQuizToEdit(host_id, quiz_id);
+        document.getElementById("loader").style.display = "none";
+    </script>
+{% endblock body %}

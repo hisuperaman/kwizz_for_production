@@ -1,0 +1,53 @@
+{% extends 'login/base.html' %}
+
+{% block title %}Username{% endblock title %}
+
+
+{% block body %}
+
+  <form id="myForm" method="post" class="border border-primary border-1 bg-dark-subtle" style="padding: 5vmin; min-height: 40vmin;">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp">
+      <div id="usernameHelp" class="form-text">Username will be used for hosting or joining a quiz.</div>
+    </div>
+    <button type="button" class="btn btn-primary" id="submitBtn" onclick="checkUsername()">Submit</button>
+    <div class="alert alert-danger" role="alert" style="float: right; display: none;" id="messageAlert">s</div>
+  </form>
+
+{% endblock body %}
+
+{% block js %}
+  <script>
+    let submitBtn = document.getElementById("submitBtn");
+
+    const checkUsername = ()=>{
+      let username = document.getElementById("username").value;
+      let URL = `{% url 'login:username_exists' %}?username=${username}`;
+      fetch(URL)
+      .then(response=>response.json())
+      .then(data=>{
+        if(data.exists){
+          document.getElementById("messageAlert").style.display = "block";
+          document.getElementById("messageAlert").innerHTML = "Username already exists!";
+        }
+        else{
+          document.getElementById("messageAlert").style.display = "none";
+          document.getElementById("messageAlert").innerHTML = "";
+          submitForm();
+        }
+      })
+    }
+
+    function submitForm(){
+
+      let form = document.getElementById('myForm');
+      form.action = "{% url 'login:welcome' %}"
+      form.method = "POST"
+      form.submit();
+      
+    }
+
+  </script>
+{% endblock js %}

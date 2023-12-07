@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Host-Responses{% endblock title %}
+
+{% block css %}<link rel="stylesheet" href="{% static 'host/responses.css' %}">{% endblock css %}
+
+
+{% block body %}
+    <main class="container my-4">
+
+      <h1 class="display-6">
+        Responses for {{host_id}} {{quiz_id}}
+      </h1>
+
+      <hr>
+      
+        <form id="myForm">
+            {% csrf_token %}
+            <input type="hidden" name="host_id" id="host_id" value="{{host_id}}">
+            <input type="hidden" name="quiz_id" id="quiz_id" value="{{quiz_id}}">
+            <input type="hidden" name="client_id" id="client_id" value="0">
+            <input type="hidden" id="quiz_start_idx" name="quiz_start_idx" value="0">
+        </form>
+        
+        <table class="table table-hover" id="quiz_table">
+            <thead>
+              <tr>
+                <th scope="col">Sr. No.</th>
+                <th scope="col">Username</th>
+                <th scope="col">Time Taken</th>
+                <th scope="col">Percentage</th>
+              </tr>
+            </thead>
+            <tbody id="quiz_table_body">
+              
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-primary" id="loadMoreBtn" onclick="loadMoreBtnClick.call()" style="display: none; margin-left: auto;">Load more</button>
+
+        <!-- client profile modal -->
+        <div class="modal fade" id="clientProfileModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog" style="position: relative; top: 10%;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5">Profile</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  
+                  <div class="container-fluid">
+      
+                    <div class="row">
+                      <div class="col-md-12">
+                        <img src="" alt="user_pfp" width="60" id="clientPfp">
+                        <span class="fw-medium ms-4">Username: </span>
+                        <span id="clientProfileUsername">tbf</span>
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <span class="fw-medium">Name: </span>
+                        <span id="clientProfileName">tbf</span>
+                      </div>
+                    </div>
+      
+                    <div class="row">
+                      <div class="col-md-12 mt-2"><span class="fw-medium">Email: </span>
+                        <span id="clientProfileEmail">tbf</span>
+                    </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12 mt-2"><span class="fw-medium">Quiz Hosted: </span><span id="clientQuizHosted">tbf</span></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12 mt-2"><span class="fw-medium">Quiz Joined: </span><span id="clientQuizJoined">tbf</span></div>
+                    </div>
+                  </div>
+      
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999; display: none;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+
+
+    </main>
+
+
+    <script>
+
+        let data = null;
+
+        function displayQuizBody(){
+            // console.log(data);
+
+            quiz_table_body.innerHTML = "";
+            
+            let j = 1;
+            for(let i=(Object.keys(data).length)-1; i>=0; i--){
+                let row = document.createElement("tr");
+                
+                row.setAttribute("onclick", "showResult.call(this)");
+
+                let clientIDField = document.createElement("input");
+                clientIDField.setAttribute("type", "hidden");
+                clientIDField.value = `${data[i].user.user_username}`;
+
+                
+                row.appendChild(clientIDField);
+
+                let quizPKField = document.createElement("input");
+                quizPKField.setAttribute("type", "hidden");
+                quizPKField.value = `${(data[i].clientquiz_quiz_id)-1000}`;
+                row.appendChild(quizPKField);
+
+
+                let sr_no_elem = document.createElement("th")
+                sr_no_elem.innerHTML=j;
+                row.appendChild(sr_no_elem);
+
+                let username_elem = document.createElement("td");
+                // username_elem.innerHTML=`<a href="#">${data[i].user.user_username}</a>`;
+                username_elem.innerHTML=`<a role="button" class="usernameLinks" style="text-decoration: underline blue; font-weight: bold;" data-bs-toggle="modal" data-bs-target="#clientProfileModal" onclick="usernameClick.call(this, event)">
+                                            ${data[i].user.user_username}
+                                        </a>`;
+                row.appendChild(username_elem);
+
+
+                let time_taken_elem = document.createElement("td");
+                let time_taken = data[i].clientquiz_time_taken.split(".")[0];
+                time_taken_elem.innerHTML= time_taken;
+                row.appendChild(time_taken_elem);
+
+
+                let percentage = (parseInt(data[i].clientquiz_correct_answers)/parseInt(data[i].clientquiz_total_questions))*100;
+                percentage = percentage.toFixed(2);
+                let percentage_elem = document.createElement("td")
+                percentage_elem.innerHTML=`${percentage}%`;
+                row.appendChild(percentage_elem);
+                
+                
+                quiz_table_body.appendChild(row);
+
+                j += 1;
+              
+            }
+
+            fetch("{% url 'client:get_all_client_quiz_count' %}", {
+              method: "POST",
+              body: JSON.stringify({"host_id": "{{host_id}}", "quiz_id": "{{quiz_id}}"})
+            })
+            .then(response=>response.json())
+            .then(quizCountData=>{
+                // console.log(`${quizCountData.total} ---- ${data.length}`)
+                quiz_count = quizCountData.total;
+                if(data.length < quizCountData.total){
+                    document.getElementById("loadMoreBtn").style.display = "block";
+                }
+                else{
+                    document.getElementById("loadMoreBtn").style.display = "none";
+                }
+            });
+
+        }
+
+        let quiz_count = null;
+        function fetchAndDisplay(){
+            let formData = new FormData(document.getElementById("myForm"))
+
+            let quiz_start_idx = document.getElementById("quiz_start_idx");
+
+            if(quiz_count==null || quiz_count>data.length){
+              fetch("{% url 'client:get_all_client_quiz' %}", {
+                  method: "POST",
+                  body: formData
+              })
+              .then(response=>response.json())
+              .then(fetchedData=>{
+
+                  storeFetchedData(fetchedData);
+                  
+                  quiz_start_idx.value = parseInt(quiz_start_idx.value) + 10;
+
+                  displayQuizBody();
+
+              })
+            }
+        }
+
+        fetchAndDisplay();
+
+        function storeFetchedData(fetchedData){
+          if(data==null){
+                data = fetchedData;
+          }
+          else{
+              data = [...data, ...fetchedData];
+          }
+        }
+
+
+        function showResult(){
+            let myForm = document.getElementById("myForm");
+            const host_id = document.getElementById("host_id").value;
+            const quiz_id = document.getElementById("quiz_id").value;
+            const client_id = this.children[0].value;
+            document.getElementById("client_id").value = client_id;
+
+            let link = "{% url 'host:result_info' 'host_id' 123 'client_id' %}"
+            .replace("host_id", host_id)
+            .replace("123", quiz_id)
+            .replace("client_id", client_id);
+
+            window.open(link);
+            
+        }
+
+
+        // client profile functions
+        function usernameClick(e){
+            e.stopPropagation()
+
+            document.getElementById("loader").style.display = "block";
+            fetch("{% url 'host:getUserData' %}",{
+                method: "POST",
+                body: JSON.stringify({"username": this.innerHTML.trim()})
+            })
+            .then(response=>response.json())
+            .then(data=>{
+                document.getElementById("clientPfp").src = data.user_pfp;
+                document.getElementById("clientProfileUsername").innerHTML = data.user_username;
+                document.getElementById("clientProfileName").innerHTML = data.user_name;
+                document.getElementById("clientProfileEmail").innerHTML = data.user_email;
+                document.getElementById("clientQuizHosted").innerHTML = data.user_quizzes_hosted;
+                document.getElementById("clientQuizJoined").innerHTML = data.user_quizzes_joined;
+
+                document.getElementById("loader").style.display = "none";
+            })
+        }
+
+
+    </script>
+{% endblock body %}

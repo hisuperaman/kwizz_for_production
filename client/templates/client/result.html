@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Client-Result{% endblock title %}
+
+{% block body %}
+    <main class="container my-4">
+
+        <div class="card" style="width: 80vmin; margin: auto;">
+            <div class="card-body">
+              <h5 class="card-title">Result</h5>
+              <p class="card-text">
+                <h6>Correct: {{correct}}/{{total_questions}}</h6>
+                <h6>{{percentage}}%</h6>
+                <h6>Attempted Questions: {{attempted_questions}}</h6>
+                <h6>Unattempted Questions: {{unattempted_questions}}</h6>
+                <h6>Time Spent: {{time_spent}}</h6>
+              </p>
+
+              {% if quiz_is_held %}
+                <a href="{% url 'client:result_info' host_id quiz_id %}" class="btn btn-primary">Check Answers</a>   
+              {% endif %}
+
+            </div>
+        </div>
+    
+    </main>
+    
+    <script>
+
+
+
+    </script>
+
+{% endblock body %}
