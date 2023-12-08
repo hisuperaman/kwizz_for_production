@@ -7,12 +7,12 @@
 {% block css %}<link rel="stylesheet" href="{% static 'host/new_quiz_style.css' %}">{% endblock css %}
 
 {% block body %}
-    <main class="container-fluid my-4">
+    <main class="container my-4 px-0">
 
         <form id="myForm">
         
         {% csrf_token %}
-        <div class="container-fluid">
+        <div class="container-fluid px-0">
             <div class="input-group mb-3" style="display: inline-flex;">
                 <input type="text" name="quiz_title" class="form-control mx-2" placeholder="quiz title goes here" id="quiz_title" required>
                 
@@ -33,7 +33,7 @@
             
             <div id="question_field">
 
-                <div class="container-fluid" class="questions">
+                <div class="container-fluid questions">
                     <h5 class="my-0">Q.<span id="latest_question_no">1</span>.
                         <div class="input-group mb-3 w-75" style="display: inline-flex;">
                             <input type="text" name="question1" class="form-control" placeholder="question title goes here" required>
@@ -48,8 +48,8 @@
 
                     <h6 class="container"><span class="choice_no">1</span>.
                         <div class="input-group mb-3 w-75" style="display: inline-flex;">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" name="question1_choice_correct" value="0" checked>
+                            <div class="input-group-text" onclick="this.children[0].checked=true;" onmouseover="this.style.cursor='pointer';">
+                                <input onmouseover="this.style.cursor='inherit';" class="form-check-input mt-0" type="radio" name="question1_choice_correct" value="0" checked>
                             </div>
                             <input type="text" name="question1_choice" class="form-control" placeholder="choice goes here" required>
                             <button type="button" class="input-group-text" onclick="new_choice_click(event)">

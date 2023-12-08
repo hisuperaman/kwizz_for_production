@@ -198,9 +198,9 @@ def getPreviouslyHeldQuizzes(request):
         total_quizzes = Quiz.objects.filter(quiz_host_id=host_id).count()
 
         if end<total_quizzes:
-            quizzes = Quiz.objects.filter(quiz_host_id=host_id, quiz_is_held=True).order_by("-quiz_publish_date")[start:end]
+            quizzes = Quiz.objects.filter(quiz_host_id=host_id, quiz_is_held=True).order_by("-quiz_start_date")[start:end]
         else:
-            quizzes = Quiz.objects.filter(quiz_host_id=host_id, quiz_is_held=True).order_by("-quiz_publish_date")[start:]
+            quizzes = Quiz.objects.filter(quiz_host_id=host_id, quiz_is_held=True).order_by("-quiz_start_date")[start:]
         
         serializer = QuizSerializer(quizzes, many=True)
         # print(serializer.data)
@@ -251,6 +251,7 @@ def start_quiz(request):
 
         quiz = Quiz.objects.get(quiz_id=quiz_id, quiz_host_id=host_id)
         quiz.quiz_visible = False
+        quiz.quiz_start_date = timezone.localtime()
         quiz.save()
 
         # returns datetime.datetime object
@@ -330,6 +331,8 @@ def deleteQuiz(request):
 
         client_quiz =  ClientQuiz.objects.filter(clientquiz_host_id=host_id, clientquiz_quiz_id=quiz_id)
         client_quiz.delete()
+
+        
 
         return JsonResponse({"message": f"Quiz deleted successfully!"})
 

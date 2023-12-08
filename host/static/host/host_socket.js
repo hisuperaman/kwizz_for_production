@@ -236,8 +236,8 @@ function submitQuiz(){
 
     // displayQuizBody(false, toBeHeldData);
 
-    document.getElementById("loaderOverlay").style.display = "none";
-    document.getElementById("loader").style.display = "none";
+    // document.getElementById("loaderOverlay").style.display = "none";
+    // document.getElementById("loader").style.display = "none";
 
   })
 }

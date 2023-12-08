@@ -27,7 +27,7 @@
         <tr>
           <th scope="col">Quiz No.</th>
           <th scope="col">Title</th>
-          <th scope="col">Published Date</th>
+          <th scope="col" id="quiz_date_heading">Published Date</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
@@ -320,7 +320,14 @@
                 row.appendChild(quiz_title);
 
                 let quiz_publish_date_elem = document.createElement("td");
-                let publish_date = new Date(data[i].quiz_publish_date);
+                let publish_date;
+                if(data[i].quiz_is_held == false){
+                  publish_date = new Date(data[i].quiz_publish_date);
+                }
+                else{
+                  publish_date = new Date(data[i].quiz_start_date);
+                }
+                // console.log(data[i].quiz_start_date)
                 var options = {year: 'numeric', month: '2-digit', day: '2-digit', hour: 'numeric', minute: 'numeric'};
                 publish_date = publish_date.toLocaleDateString("en-IN", options);
                 quiz_publish_date_elem.innerHTML= publish_date;
@@ -355,6 +362,9 @@
                 else{
                   document.getElementById("loadMoreBtn").style.display = "none";
                 }
+
+                document.getElementById("loaderOverlay").style.display = "none";
+                document.getElementById("loader").style.display = "none";
               })
             }
             else{
@@ -367,6 +377,9 @@
                 else{
                   document.getElementById("loadMoreBtn").style.display = "none";
                 }
+
+                document.getElementById("loaderOverlay").style.display = "none";
+                document.getElementById("loader").style.display = "none";
               })
             }
 
@@ -457,6 +470,7 @@
 
 
       if(toBeHeld_btn.classList.contains("active")){
+        document.getElementById("quiz_date_heading").innerHTML = "Publish Date"
         quiz_table_body.innerHTML = "";
 
         let isHeld = false;
@@ -482,6 +496,7 @@
       }
 
       toBeHeld_btn.addEventListener("click", (e)=>{
+          document.getElementById("quiz_date_heading").innerHTML = "Publish Date";
           quiz_table_body.innerHTML = "";
           
           let isHeld = false;
@@ -489,6 +504,7 @@
       });
 
       previouslyHeld_btn.addEventListener("click", (e)=>{
+          document.getElementById("quiz_date_heading").innerHTML = "Start Date"
           quiz_table_body.innerHTML = "";
 
           let isHeld = true;
@@ -497,6 +513,7 @@
       });
 
       function loadMoreBtnClick(){
+        document.getElementById("loader").style.display = "block";
         let isHeld;
         if(toBeHeld_btn.classList.contains("active")){
           isHeld = false;

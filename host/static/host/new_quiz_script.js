@@ -41,8 +41,8 @@ const new_question_click = (e)=>{
 
                     <h6 class="container" style="display: flex-block;"><span class="choice_no">1</span>.
                         <div class="input-group mb-3 w-75" style="display: inline-flex;">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" name="question${question_no}_choice_correct" value="0" checked>
+                            <div class="input-group-text" onclick="this.children[0].checked=true;" onmouseover="this.style.cursor='pointer';">
+                                <input onmouseover="this.style.cursor='inherit';" class="form-check-input mt-0" type="radio" name="question${question_no}_choice_correct" value="0" checked>
                             </div>
                             <input type="text" name="question${question_no}_choice" class="form-control" placeholder="choice goes here" required>
                             <button type="button" class="input-group-text" onclick="new_choice_click(event)">
@@ -89,8 +89,8 @@ const new_choice_click = (e)=>{
 
     let html = `<span class="choice_no">${choice_no}</span>.
                 <div class="input-group mb-3 w-75" style="display: inline-flex;">
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="radio" name="question${question_no}_choice_correct" value="${choice_no-1}">
+                    <div class="input-group-text" onclick="this.children[0].checked=true;" onmouseover="this.style.cursor='pointer';">
+                        <input onmouseover="this.style.cursor='inherit';" class="form-check-input mt-0" type="radio" name="question${question_no}_choice_correct" value="${choice_no-1}">
                     </div>
                     <input type="text" name="question${question_no}_choice" class="form-control" placeholder="choice goes here" required>
                     <button type="button" class="input-group-text" onclick="new_choice_click(event)">
