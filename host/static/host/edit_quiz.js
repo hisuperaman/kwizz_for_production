@@ -40,6 +40,9 @@ function fetchQuiz(host_id, quiz_id){
         // }
 
         editQuizDisplay();
+
+        document.getElementById("loaderOverlay").style.display = "none";
+        document.getElementById("loader").style.display = "none";
     })
     .catch(error=>{
         window.location.href = hostIndexURL;

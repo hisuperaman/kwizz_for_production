@@ -423,35 +423,35 @@
 
       }
 
-      function fetchInitialToBeHeldQuiz(){
-        fetch("{% url 'host:getToBeHeldQuizzes' %}", {
+      async function fetchInitialToBeHeldQuiz(display){
+        const response = await fetch("{% url 'host:getToBeHeldQuizzes' %}", {
               method: "POST",
               body: JSON.stringify({"start": 0})
-        })
-        .then(response=>response.json())
-        .then(data=>{
-          
-          quiz_table_body.innerHTML = "";
-          toBeHeldData = data;
-          displayQuizBody(false, toBeHeldData);
+        });
+        const data = await response.json();
 
-        })
+        toBeHeldData = data;
+
+        if(display){
+          quiz_table_body.innerHTML = "";
+          displayQuizBody(false, toBeHeldData);
+        }
         
       }
 
-      function fetchInitialPreviouslyHeldQuiz(){
-        fetch("{% url 'host:getPreviouslyHeldQuizzes' %}", {
+      async function fetchInitialPreviouslyHeldQuiz(display){
+        const response = await fetch("{% url 'host:getPreviouslyHeldQuizzes' %}", {
               method: "POST",
               body: JSON.stringify({"start": 0})
-        })
-        .then(response=>response.json())
-        .then(data=>{
-          
+        });
+        const data = await response.json();
+        
+        previouslyHeldData = data;
+        
+        if(display){
           quiz_table_body.innerHTML = "";
-          previouslyHeldData = data;
           displayQuizBody(true, previouslyHeldData);
-
-        })
+        }
         
       }
 

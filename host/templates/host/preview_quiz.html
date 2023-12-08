@@ -23,7 +23,7 @@
         </div>
 
         <div>
-            <p id="timer" style="display: inline; float: right;" class="my-2">00:00</p>
+            <p id="timer" style="display: none; float: right;" class="my-2">00:00</p>
         </div>
 
         <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
@@ -60,6 +60,8 @@
             for(let i=0; i<data.question_set.length; i++){
                 displayQuizData(i);
             }
+
+            document.getElementById("timer").style.display = "inline";
 
             document.getElementById("loaderOverlay").style.display = "none";
             document.getElementById("loader").style.display = "none";

@@ -211,8 +211,6 @@ function stopQuiz(){
     // console.log("quiz start end session cleared!")
     submitQuiz();
 
-    document.getElementById("loaderOverlay").style.display = "none";
-    document.getElementById("loader").style.display = "none";
   })
 
 }
@@ -233,8 +231,13 @@ function submitQuiz(){
     document.getElementById("user_quizzes_hosted").innerHTML = parseInt(document.getElementById("user_quizzes_hosted").innerHTML)+1;
     document.getElementById("quizStartModalCloseBtn").click();
 
-    fetchInitialPreviouslyHeldQuiz();
-    fetchInitialToBeHeldQuiz();
+    fetchInitialPreviouslyHeldQuiz(false);
+    fetchInitialToBeHeldQuiz(true);
+
+    // displayQuizBody(false, toBeHeldData);
+
+    document.getElementById("loaderOverlay").style.display = "none";
+    document.getElementById("loader").style.display = "none";
 
   })
 }

@@ -45,10 +45,10 @@ function deleteQuiz(){
         quiz_table_body.innerHTML = "";
     
         if(toBeHeld_btn.classList.contains("active")){
-            fetchInitialToBeHeldQuiz();
+            fetchInitialToBeHeldQuiz(true);
         }
         else{
-            fetchInitialPreviouslyHeldQuiz();
+            fetchInitialPreviouslyHeldQuiz(true);
         }
 
     })
