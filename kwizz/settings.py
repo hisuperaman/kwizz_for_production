@@ -66,12 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app",
-    "https://kwizz.adaptable.app",
-    "http://kwizz.adaptable.app"
-    # Add any other trusted origins as needed
-]
+CORS_ALLOWED_ORIGINS = ["*"]
 
 ROOT_URLCONF = 'kwizz.urls'
 
