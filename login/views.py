@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_protect
 import requests
 from .models import User
 import os
@@ -71,6 +72,7 @@ def logout(request):
     return redirect(reverse("login:index"))
 
 
+@csrf_protect
 def welcome(request):
     if request.method=="POST":
         username = request.POST["username"]
