@@ -36,7 +36,10 @@ def callback(request):
         "redirect_uri": REDIRECT_URI
     }
 
-    token_response = requests.post(TOKEN_URL, data=token_params)
+    try:
+        token_response = requests.post(TOKEN_URL, data=token_params)
+    except Exception as e:
+        print(e)
 
     access_token = token_response.json()["access_token"]
 
