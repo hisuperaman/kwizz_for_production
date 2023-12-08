@@ -68,13 +68,10 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app",
-    "https://kwizz.adaptable.app"
+    "https://kwizz.adaptable.app",
+    "http://kwizz.adaptable.app"
     # Add any other trusted origins as needed
 ]
-
-SECURE_SSL_REDIRECT = True  # Redirect HTTP requests to HTTPS
-SESSION_COOKIE_SECURE = True  # Use secure cookies for session cookies
-CSRF_COOKIE_SECURE = True  # Use secure cookies for CSRF protection
 
 ROOT_URLCONF = 'kwizz.urls'
 

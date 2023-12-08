@@ -73,6 +73,7 @@ def logout(request):
 
 
 def welcome(request):
+    print(request.headers.get("Origin"))
     if request.method=="POST":
         username = request.POST["username"]
         username = username.strip()
