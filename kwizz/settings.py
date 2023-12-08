@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'kwizz.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-for postgres with database url
+# for postgres with database url
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
