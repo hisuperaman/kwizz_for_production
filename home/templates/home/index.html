@@ -120,7 +120,7 @@
                     </h6>
                   </p>
                 </div>
-                <button type="button" class="btn btn-primary" id="result_infoBtn" onclick="showResult.call(this)">Check for Answers</button>
+                <button type="button" class="btn btn-primary" id="result_infoBtn" onclick="showResult.call(this)" style="display: none;">Check for Answers</button>
               </div>
             </div>
           </div>
@@ -198,8 +198,8 @@
               let row = document.createElement("tr");
               
               row.setAttribute("onclick", "joinedQuizModal.call(this)");
-              row.setAttribute("data-bs-toggle", "modal");
-              row.setAttribute("data-bs-target", "#joinedQuizModal");
+              // row.setAttribute("data-bs-toggle", "modal");
+              // row.setAttribute("data-bs-target", "#joinedQuizModal");
 
               let quizCodeField = document.createElement("input");
               quizCodeField.setAttribute("type", "hidden");
@@ -365,6 +365,9 @@
             }
           })
 
+          const myModal = new bootstrap.Modal(document.getElementById('joinedQuizModal'));
+          myModal.show();
+
           document.getElementById("loader").style.display = "none";
 
         })
@@ -373,6 +376,9 @@
           document.getElementById("joinedQuizModalTitle").innerHTML = "Not found!";
           document.getElementById("joinedQuizModalBody").innerHTML = `<p style="color: red;">Requested quiz is deleted by the Host!</p>`;
           document.getElementById("joinedQuizModalFooter").innerHTML = "";
+
+          const myModal = new bootstrap.Modal(document.getElementById('joinedQuizModal'));
+          myModal.show();
 
           document.getElementById("loader").style.display = "none";
         })

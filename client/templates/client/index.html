@@ -7,7 +7,7 @@
 
 
 {% block body %}
-    <main class="container mt-4" id="mainContent" style="display: block;">
+    <main class="container mt-4" id="mainContent" style="display: none;">
 
         <form id="myForm">
             {% csrf_token %}
@@ -193,6 +193,8 @@
         }
 
         function submitQuiz(){
+            document.getElementById("loader").style.display = "block";
+
             let host_id = document.getElementById("host_id").value;
             let quiz_id = document.getElementById("quiz_id").value;
 
@@ -218,6 +220,7 @@
 
             .then(response=>response.json())
             .then(data=>{
+                document.getElementById("loader").style.display = "none";
                 const myModal = new bootstrap.Modal(document.getElementById('submitModal'));
                 myModal.show();
                 document.getElementById("submitModalBody").innerHTML = data.message;

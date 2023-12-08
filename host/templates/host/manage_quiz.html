@@ -533,9 +533,6 @@
 
       // previously held tab functions
       function previouslyHeldModal(){
-        
-        const myModal = new bootstrap.Modal(document.getElementById('previouslyHeldModal'));
-        myModal.show();
 
         const quiz_code = this.children[0].value;
         const quizPK = this.children[1].value;
@@ -572,7 +569,11 @@
           document.getElementById("quiz_title_display").innerHTML = fetchedData.quiz_title;
           document.getElementById("previouslyHeldModalTitle").innerHTML = quiz_code;
 
+          const myModal = new bootstrap.Modal(document.getElementById('previouslyHeldModal'));
+          myModal.show();
+          
           document.getElementById("loader").style.display = "none";
+
         });
 
       }

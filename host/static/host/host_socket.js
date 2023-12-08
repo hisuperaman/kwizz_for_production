@@ -21,9 +21,6 @@ socket.on("room_count", (data)=>{
 
 function quizInfoModal(){
 
-    const myModal = new bootstrap.Modal(document.getElementById('quizInfoModal'));
-    myModal.show();
-
     let quizCodeElem = document.getElementById("quizCodeForStart");
     quizCodeElem.value = this.children[0].value;
 
@@ -133,6 +130,8 @@ function quizInfoModal(){
       quizLinkURL = quizLinkURL.replace("123", quiz_id);
       document.getElementById("quizLink").value = `${window.location.host}${quizLinkURL}`;
 
+      const myModal = new bootstrap.Modal(document.getElementById('quizInfoModal'));
+      myModal.show();
 
       document.getElementById("loader").style.display = "none";
     })
