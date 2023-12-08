@@ -254,7 +254,6 @@
       function fetchAndDisplay(){
           let quiz_start_idx = document.getElementById("quiz_start_idx");
 
-          document.getElementById("loaderOverlay").style.display = "block";
           document.getElementById("loader").style.display = "block";
           fetch("{% url 'client:get_client_quizzes' %}", {
               method: "POST",
@@ -279,7 +278,6 @@
                   document.getElementById("loadMoreBtn").style.display = "none";
                 }
 
-                document.getElementById("loaderOverlay").style.display = "none";
                 document.getElementById("loader").style.display = "none";
               })
 
@@ -390,6 +388,7 @@
           const myModal = new bootstrap.Modal(document.getElementById('joinedQuizModal'));
           myModal.show();
 
+          document.getElementById("loaderOverlay").style.display = "none";
           document.getElementById("loader").style.display = "none";
         })
 

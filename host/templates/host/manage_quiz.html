@@ -434,7 +434,7 @@
 
         if(display){
           quiz_table_body.innerHTML = "";
-          displayQuizBody(false, toBeHeldData);
+          await displayQuizBody(false, toBeHeldData);
         }
         
       }
@@ -450,7 +450,7 @@
         
         if(display){
           quiz_table_body.innerHTML = "";
-          displayQuizBody(true, previouslyHeldData);
+          await displayQuizBody(true, previouslyHeldData);
         }
         
       }
