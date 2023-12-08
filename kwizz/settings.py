@@ -54,7 +54,15 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ORIGIN_WHITELIST = (
+    'https://kwizz.adaptable.app',
+    'https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app',
+)
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://kwizz.adaptable.app',
+    'https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app',
+]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
