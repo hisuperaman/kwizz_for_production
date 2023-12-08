@@ -38,6 +38,7 @@ function quizInfoModal(){
 
     // console.log(toBeHeldData)
 
+    document.getElementById("loaderOverlay").style.display = "block";
     document.getElementById("loader").style.display = "block";
     fetch(getTimerValueURL)
     .then(response=>response.json())
@@ -133,12 +134,16 @@ function quizInfoModal(){
       const myModal = new bootstrap.Modal(document.getElementById('quizInfoModal'));
       myModal.show();
 
+      document.getElementById("loaderOverlay").style.display = "none";
       document.getElementById("loader").style.display = "none";
     })
 }
 
 let timer;
 function startQuiz(){
+    document.getElementById("loaderOverlay").style.display = "block";
+    document.getElementById("loader").style.display = "block";
+
     let quizCodeElem = document.getElementById("quizCodeForStart");
     let room = quizCodeElem.value;
 
@@ -175,6 +180,9 @@ function startQuiz(){
 
       // console.log("done");
 
+      document.getElementById("loaderOverlay").style.display = "none";
+      document.getElementById("loader").style.display = "none";
+
     })
 
 }
@@ -188,6 +196,9 @@ socket.on("stop_timer_host", (data)=>{
 
 function stopQuiz(){
 
+  document.getElementById("loaderOverlay").style.display = "block";
+  document.getElementById("loader").style.display = "block";
+
   document.getElementById("stopBtn").style.display = "none";
   document.getElementById("startBtn").style.display = "block";
   document.getElementById("quizStartModalCloseBtn").disabled = false;
@@ -199,6 +210,9 @@ function stopQuiz(){
   .then(data=>{
     // console.log("quiz start end session cleared!")
     submitQuiz();
+
+    document.getElementById("loaderOverlay").style.display = "none";
+    document.getElementById("loader").style.display = "none";
   })
 
 }

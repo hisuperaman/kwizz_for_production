@@ -245,6 +245,7 @@
     </div>
 
 
+    <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
     <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999;">
       <span class="visually-hidden">Loading...</span>
     </div>
@@ -416,6 +417,7 @@
 
           previously_held_start_idx.value = parseInt(previously_held_start_idx.value) + 10;
 
+          document.getElementById("loaderOverlay").style.display = "none";
           document.getElementById("loader").style.display = "none";
         });
 
@@ -547,6 +549,7 @@
         
         document.getElementById("totalTimer").innerHTML = timerString;
         
+        document.getElementById("loaderOverlay").style.display = "block";
         document.getElementById("loader").style.display = "block";
         fetch(`{% url 'host:getJoinedUsers' %}?quiz_code=${quiz_code}`)
         .then(response=>response.json())
@@ -572,6 +575,7 @@
           const myModal = new bootstrap.Modal(document.getElementById('previouslyHeldModal'));
           myModal.show();
           
+          document.getElementById("loaderOverlay").style.display = "none";
           document.getElementById("loader").style.display = "none";
 
         });

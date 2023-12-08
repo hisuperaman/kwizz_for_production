@@ -31,7 +31,8 @@ DEBUG = os.getenv("DEBUG", "False").lower() in ["yes", "true", "1", "on"]
 
 ALLOWED_HOSTS = [
     "kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app",
-    "kwizz.adaptable.app"
+    "kwizz.adaptable.app",
+    "localhost"
 ]
 # ALLOWED_HOSTS = ['192.168.208.29']
 # ALLOWED_HOSTS = ['192.168.208.145']
@@ -57,11 +58,13 @@ INSTALLED_APPS = [
 CORS_ORIGIN_WHITELIST = (
     'https://kwizz.adaptable.app',
     'https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app',
+    'http://localhost:8000',
 )
 
 CSRF_TRUSTED_ORIGINS = [
     'https://kwizz.adaptable.app',
     'https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app',
+    'http://localhost:8000',
 ]
 
 MIDDLEWARE = [
@@ -101,7 +104,7 @@ WSGI_APPLICATION = 'kwizz.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# for postgres with database url
+for postgres with database url
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }

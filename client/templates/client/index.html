@@ -72,6 +72,7 @@
         Refreshing the page will dismiss your response!
     </div>
 
+    <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
     <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999;">
         <span class="visually-hidden">Loading...</span>
     </div>
@@ -93,6 +94,7 @@
 
         const leaveRoomURL = "{% url 'host:leave' %}";
 
+        document.getElementById("loaderOverlay").style.display = "block";
         document.getElementById("loader").style.display = "block";
         fetch("{% url 'client:get_quiz' %}", {
             method: "POST",
@@ -118,6 +120,7 @@
             displayQuizData();
 
             // hiding loader and displaying the content
+            document.getElementById("loaderOverlay").style.display = "none";
             document.getElementById("loader").style.display = "none";
             
         })
@@ -193,6 +196,7 @@
         }
 
         function submitQuiz(){
+            document.getElementById("loaderOverlay").style.display = "block";
             document.getElementById("loader").style.display = "block";
 
             let host_id = document.getElementById("host_id").value;
@@ -220,6 +224,7 @@
 
             .then(response=>response.json())
             .then(data=>{
+                document.getElementById("loaderOverlay").style.display = "none";
                 document.getElementById("loader").style.display = "none";
                 const myModal = new bootstrap.Modal(document.getElementById('submitModal'));
                 myModal.show();

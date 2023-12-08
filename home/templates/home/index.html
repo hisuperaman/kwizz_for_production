@@ -74,6 +74,7 @@
             </thead>
             <tbody id="quiz_table_body">
               
+              <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
               <div class="spinner-border" id="loader" role="status" style="position: fixed; left: 45%; z-index: 9999;">
                 <span class="visually-hidden">Loading...</span>
               </div>
@@ -150,6 +151,8 @@
       }
 
       function quizExists(){
+        document.getElementById("loaderOverlay").style.display = "block";
+        document.getElementById("loader").style.display = "block";
 
         let quiz_code = document.getElementById('quiz_code').value;
 
@@ -164,6 +167,9 @@
             document.getElementById("modalAlert").innerHTML = data.message;
             document.getElementById("modalAlert").style.display = "block";
           }
+
+          document.getElementById("loaderOverlay").style.display = "none";
+          document.getElementById("loader").style.display = "none";
         }));
 
       }
@@ -248,6 +254,7 @@
       function fetchAndDisplay(){
           let quiz_start_idx = document.getElementById("quiz_start_idx");
 
+          document.getElementById("loaderOverlay").style.display = "block";
           document.getElementById("loader").style.display = "block";
           fetch("{% url 'client:get_client_quizzes' %}", {
               method: "POST",
@@ -272,6 +279,7 @@
                   document.getElementById("loadMoreBtn").style.display = "none";
                 }
 
+                document.getElementById("loaderOverlay").style.display = "none";
                 document.getElementById("loader").style.display = "none";
               })
 
@@ -313,6 +321,7 @@
         const quiz_code = document.getElementById("quizCodeForResult").value;
 
 
+        document.getElementById("loaderOverlay").style.display = "block";
         document.getElementById("loader").style.display = "block";
         fetch(`{% url 'client:getQuizTitle' %}?quiz_code=${quiz_code}`)
         .then(response=>response.json())
@@ -368,6 +377,7 @@
           const myModal = new bootstrap.Modal(document.getElementById('joinedQuizModal'));
           myModal.show();
 
+          document.getElementById("loaderOverlay").style.display = "none";
           document.getElementById("loader").style.display = "none";
 
         })
@@ -380,6 +390,7 @@
           const myModal = new bootstrap.Modal(document.getElementById('joinedQuizModal'));
           myModal.show();
 
+          document.getElementById("loaderOverlay").style.display = "none";
           document.getElementById("loader").style.display = "none";
         })
 

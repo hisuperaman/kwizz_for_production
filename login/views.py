@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_protect
 import requests
 from .models import User
 import os
@@ -9,8 +8,8 @@ import os
 from .oauth_variables import *
 # from .client_credentials import *
 
-CLIENT_ID = os.getenv("CLIENT_ID", 123)
-CLIENT_SECRET = os.getenv("CLIENT_SECRET", 123)
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 # Create your views here.
 def index(request):
@@ -38,7 +37,6 @@ def callback(request):
     }
 
     token_response = requests.post(TOKEN_URL, data=token_params)
-    # print(f"Token Response: {token_response.text}")
 
     access_token = token_response.json()["access_token"]
 
@@ -73,7 +71,6 @@ def logout(request):
 
 
 def welcome(request):
-    print(request.headers.get("Origin"))
     if request.method=="POST":
         username = request.POST["username"]
         username = username.strip()

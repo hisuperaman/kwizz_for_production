@@ -16,6 +16,11 @@
     <div class="alert alert-danger" role="alert" style="float: right; display: none;" id="messageAlert">s</div>
   </form>
 
+  <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
+  <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999;">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+
 {% endblock body %}
 
 {% block js %}
@@ -23,6 +28,9 @@
     let submitBtn = document.getElementById("submitBtn");
 
     const checkUsername = ()=>{
+      document.getElementById("loaderOverlay").style.display = "block";
+      document.getElementById("loader").style.display = "block";
+
       let username = document.getElementById("username").value;
       let URL = `{% url 'login:username_exists' %}?username=${username}`;
       fetch(URL)
@@ -37,6 +45,8 @@
           document.getElementById("messageAlert").innerHTML = "";
           submitForm();
         }
+        document.getElementById("loaderOverlay").style.display = "none";
+        document.getElementById("loader").style.display = "none";
       })
     }
 

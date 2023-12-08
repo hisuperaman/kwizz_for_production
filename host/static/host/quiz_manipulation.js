@@ -1,4 +1,5 @@
 function askDelete(e){
+    document.getElementById("loaderOverlay").style.display = "block";
     document.getElementById("loader").style.display = "block";
 
     e.stopPropagation();
@@ -11,6 +12,7 @@ function askDelete(e){
 
     document.getElementById("deleteQuizModalLabel").innerHTML = quiz_code;
 
+    document.getElementById("loaderOverlay").style.display = "none";
     document.getElementById("loader").style.display = "none";
     
 }
@@ -19,6 +21,7 @@ function deleteQuiz(){
 
     document.getElementById("deleteQuizCloseBtn").click();
 
+    document.getElementById("loaderOverlay").style.display = "block";
     document.getElementById("loader").style.display = "block";
 
     let quizCode = document.getElementById("quizCodeForStart").value;
@@ -33,6 +36,7 @@ function deleteQuiz(){
         document.getElementById("deleteQuizAlertModalMessage").innerHTML = data.message;
         
         
+        document.getElementById("loaderOverlay").style.display = "none";
         document.getElementById("loader").style.display = "none";
 
         const myModal = new bootstrap.Modal(document.getElementById('deleteQuizAlertModal'));
@@ -60,6 +64,7 @@ function editQuiz(){
 // quiz visibility
 let quizVisibilityCheckbox = document.getElementById("quizVisibilityCheckbox")
 quizVisibilityCheckbox.addEventListener("change", (e)=>{
+    document.getElementById("loaderOverlay").style.display = "block";
     document.getElementById("loader").style.display = "block";
 
     let quizPK = document.getElementById("quizPKField").value;
@@ -81,6 +86,7 @@ quizVisibilityCheckbox.addEventListener("change", (e)=>{
         .then(data=>{
             toBeHeldData[quizPK].quiz_visible = true;
 
+            document.getElementById("loaderOverlay").style.display = "none";
             document.getElementById("loader").style.display = "none";
         })
     }
@@ -99,6 +105,7 @@ quizVisibilityCheckbox.addEventListener("change", (e)=>{
         .then(data=>{
             toBeHeldData[quizPK].quiz_visible = false;
 
+            document.getElementById("loaderOverlay").style.display = "none";
             document.getElementById("loader").style.display = "none";
         })
     }

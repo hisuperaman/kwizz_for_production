@@ -40,6 +40,9 @@ function fetchQuiz(host_id, quiz_id){
         // }
 
         editQuizDisplay();
+
+        document.getElementById("loaderOverlay").style.display = "none";
+        document.getElementById("loader").style.display = "none";
     });
 
 }
@@ -49,6 +52,9 @@ function saveData(fetchedData){
 }
 
 function createClick(){
+
+    document.getElementById("loaderOverlay").style.display = "block";
+    document.getElementById("loader").style.display = "block";
 
     let quiz_code = this.parentElement.parentElement.children[0].value;
     let host_id = quiz_code.split(" ")[0];
