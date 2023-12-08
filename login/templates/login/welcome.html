@@ -5,7 +5,7 @@
 
 {% block body %}
 
-  <form id="myForm" action="{% url 'login:welcome' %}" method="post" class="border border-primary border-1 bg-dark-subtle" style="padding: 5vmin; min-height: 40vmin;">
+  <form id="myForm" method="post" class="border border-primary border-1 bg-dark-subtle" style="padding: 5vmin; min-height: 40vmin;">
     {% csrf_token %}
     <div class="mb-3">
       <label for="username" class="form-label">Username</label>
@@ -35,8 +35,18 @@
         else{
           document.getElementById("messageAlert").style.display = "none";
           document.getElementById("messageAlert").innerHTML = "";
+          submitForm();
         }
       })
+    }
+
+    function submitForm(){
+
+      let form = document.getElementById('myForm');
+      form.action = "{% url 'login:welcome' %}"
+      form.method = "POST"
+      form.submit();
+      
     }
 
   </script>
