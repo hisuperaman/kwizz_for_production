@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+CORS_ALLOWED_ORIGINS = ["*"]
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
@@ -65,8 +67,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CORS_ALLOWED_ORIGINS = ["*"]
 
 ROOT_URLCONF = 'kwizz.urls'
 
