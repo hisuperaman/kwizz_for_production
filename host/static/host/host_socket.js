@@ -1,4 +1,4 @@
-const serverURL = "https://kwizz-27z2.onrender.com"
+const serverURL = "https://kwizz.adaptable.app"
 // const serverURL = "http://192.168.208.29:8000"
 // const serverURL = "http://192.168.208.145:8000"
 
