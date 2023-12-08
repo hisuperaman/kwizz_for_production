@@ -29,7 +29,10 @@ SECRET_KEY = 'django-insecure-na(scspqoh_!4qq&@*gggh39q6p=2t8i8+o0=wp9yli)7x^!#q
 # DEBUG = True
 DEBUG = os.getenv("DEBUG", "False").lower() in ["yes", "true", "1", "on"]
 
-ALLOWED_HOSTS = ["kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app"]
+ALLOWED_HOSTS = [
+    "kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app",
+    "https://kwizz.adaptable.app"
+]
 # ALLOWED_HOSTS = ['192.168.208.29']
 # ALLOWED_HOSTS = ['192.168.208.145']
 
@@ -65,6 +68,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://kwizz-app-app-0258d5adb35cac548-duefjrmtca-uc.a.run.app",
+    "https://kwizz.adaptable.app"
     # Add any other trusted origins as needed
 ]
 
