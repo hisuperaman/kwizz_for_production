@@ -21,6 +21,11 @@ class QuizSerializer(serializers.ModelSerializer):
         model = Quiz
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields.pop('user', None)
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

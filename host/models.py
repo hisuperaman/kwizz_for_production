@@ -4,8 +4,10 @@ from login.models import User
 
 # Create your models here.
 class Quiz(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+
     quiz_id = models.IntegerField()
-    quiz_host_id = models.TextField()
+    quiz_host_id = models.CharField(max_length=200)
 
     quiz_title = models.TextField()
     quiz_timer_minutes = models.IntegerField()
@@ -26,25 +28,33 @@ class Quiz(models.Model):
         super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        if self.quiz_id>1030:
+        if self.quiz_id>9999:
             next_quiz_id = self.get_next_available_quiz_id()
             self.quiz_id = next_quiz_id
+
+        self.user = self.get_default_user()
 
         super().save(*args, **kwargs)
 
     def get_next_available_quiz_id(self):
         filtered_data = Quiz.objects.filter(quiz_host_id=self.quiz_host_id)
         existing_quiz_ids = filtered_data.values_list("quiz_id", flat=True)
-        total_quiz_ids = range(1000, 1031)
+        total_quiz_ids = range(1000, 10000)
         available_quiz_ids = set(total_quiz_ids) - set(existing_quiz_ids)
         if available_quiz_ids:
             return min(available_quiz_ids)
         else:
             raise ValueError("Quiz limit reached.")
 
+    def get_default_user(self):
+        try:
+            return User.objects.get(user_username=self.quiz_host_id)
+        except User.DoesNotExist:
+            return None
+
 
     def __str__(self):
-        return f"{self.quiz_host_id}{self.quiz_id} -> {self.quiz_title}"
+        return f"{self.quiz_host_id} {self.quiz_id} -> {self.quiz_title}"
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)

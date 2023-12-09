@@ -7,7 +7,7 @@ class ClientQuiz(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     clientquiz_quiz_id = models.IntegerField()
-    clientquiz_host_id = models.TextField()
+    clientquiz_host_id = models.CharField(max_length=200)
 
     clientquiz_start_time = models.DateTimeField(default=timezone.localtime)
     clientquiz_end_time = models.DateTimeField()
@@ -19,7 +19,7 @@ class ClientQuiz(models.Model):
     clientquiz_correct_answers = models.IntegerField()
 
     def __str__(self):
-        return f"{self.user.user_uid} -> {self.clientquiz_host_id}{self.clientquiz_quiz_id}"
+        return f"{self.user.user_username} -> {self.clientquiz_host_id} {self.clientquiz_quiz_id}"
 
 
 class ClientQuestion(models.Model):
