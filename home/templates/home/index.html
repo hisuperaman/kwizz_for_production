@@ -45,7 +45,7 @@
                           
                         </div>
 
-                          <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Join</button>
+                          <button type="button" class="btn btn-primary" onclick="validateAndSubmit()" id="joinBtn">Join</button>
                         </div>
                       </div>
                     </div>
@@ -395,6 +395,13 @@
         
       }
 
+      document.getElementById("quiz_code").addEventListener("keypress", (e)=>{
+        
+        if(e.key=="Enter"){
+          document.getElementById("joinBtn").click();
+          e.preventDefault();
+        }
+      })
 
     </script>
 

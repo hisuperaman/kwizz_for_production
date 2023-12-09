@@ -534,7 +534,7 @@
         let link = "{% url 'host:preview' 'host_id' 123 %}"
         .replace("host_id", host_id)
         .replace("123", quiz_id);
-        window.location.href =  link;
+        window.open(link, "_blank");
       }
 
       function previouslyHeldPreviewClick(){
@@ -546,7 +546,7 @@
         let link = "{% url 'host:preview' 'host_id' 123 %}"
         .replace("host_id", host_id)
         .replace("123", quiz_id);
-        window.location.href =  link;
+        window.open(link, "_blank");
       }
 
 
