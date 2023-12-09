@@ -45,8 +45,7 @@
           document.getElementById("messageAlert").innerHTML = "";
           submitForm();
         }
-        document.getElementById("loaderOverlay").style.display = "none";
-        document.getElementById("loader").style.display = "none";
+        
       })
     }
 
@@ -56,6 +55,9 @@
       form.action = "{% url 'login:welcome' %}"
       form.method = "POST"
       form.submit();
+
+      document.getElementById("loaderOverlay").style.display = "none";
+      document.getElementById("loader").style.display = "none";
       
     }
 

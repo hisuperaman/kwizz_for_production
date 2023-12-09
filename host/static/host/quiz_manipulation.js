@@ -35,6 +35,7 @@ function deleteQuiz(){
         document.getElementById("deleteQuizAlertModalLabel").innerHTML = quizCode;
         document.getElementById("deleteQuizAlertModalMessage").innerHTML = data.message;
         
+        document.getElementById("user_quizzes_hosted").innerHTML = parseInt(document.getElementById("user_quizzes_hosted").innerHTML)-1;
         
         document.getElementById("loaderOverlay").style.display = "none";
         document.getElementById("loader").style.display = "none";

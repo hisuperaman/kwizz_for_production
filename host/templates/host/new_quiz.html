@@ -12,7 +12,7 @@
         <form id="myForm">
         
         {% csrf_token %}
-        <div class="container-fluid px-0">
+        <div class="container-fluid px-2">
             <div class="input-group mb-3" style="display: inline-flex;">
                 <input type="text" name="quiz_title" class="form-control mx-2" placeholder="quiz title goes here" id="quiz_title" required>
                 
@@ -64,8 +64,8 @@
             </div>
 
             <input type="hidden" name="no_of_questions" id="no_of_questions" value="1">
+
             <button type="submit" class="btn btn-success" style="float: right;">Create</button>
-            
             <button type="button" class="btn btn-primary"  onclick="createFromPrevious.call(this)">Replicate Quiz</button>
 
         </div>

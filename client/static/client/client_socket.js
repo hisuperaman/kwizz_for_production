@@ -78,8 +78,6 @@ socket.on("stop_timer", ()=>{
 socket.on("submit_quiz", ()=>{
     stopTimer();
     submitQuiz();
-
-    document.getElementById("user_quizzes_joined").innerHTML = parseInt(document.getElementById("user_quizzes_joined").innerHTML)+1;
 })
 
 socket.on("visibility_changed", (data)=>{

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from login.models import User
 
 # Create your models here.
 class Quiz(models.Model):
@@ -16,6 +17,13 @@ class Quiz(models.Model):
     quiz_visible = models.BooleanField(default=True)
 
     quiz_no_of_users = models.IntegerField(default=0)
+
+    def delete(self, *args, **kwargs):
+        user_obj = User.objects.get(user_username=self.quiz_host_id)
+        user_obj.user_quizzes_hosted -= 1
+        user_obj.save()
+
+        super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.quiz_id>1030:

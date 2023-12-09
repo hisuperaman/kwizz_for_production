@@ -226,6 +226,9 @@
             .then(data=>{
                 document.getElementById("loaderOverlay").style.display = "none";
                 document.getElementById("loader").style.display = "none";
+
+                document.getElementById("user_quizzes_joined").innerHTML = parseInt(document.getElementById("user_quizzes_joined").innerHTML)+1;
+
                 const myModal = new bootstrap.Modal(document.getElementById('submitModal'));
                 myModal.show();
                 document.getElementById("submitModalBody").innerHTML = data.message;

@@ -103,7 +103,8 @@ def new_quiz(request):
                 return JsonResponse({"message": f"Quiz limit reached. Please delete some quizzes to create new one!", "error": True})
 
             questions_text = list(questions.keys())
-            # print(questions)
+            print(questions)
+            print(questions_text)
             for i in range(no_of_questions):
                 question = questions_text[i]
                 question_obj = quiz_obj.question_set.create(question_id=i+1, question_text=question)
@@ -112,8 +113,9 @@ def new_quiz(request):
                 choices = choices_and_correct["choices"]
                 choice_correct = choices_and_correct["correct_choice_idx"]
                 j = 1
+                print(choices)
                 for choice in choices:
-                    if choices[choice_correct]==choice:
+                    if choice_correct==(j-1):
                         choice_obj = question_obj.choice_set.create(choice_id=j, choice_text=choice, is_correct_choice=True)
                     else:
                         choice_obj = question_obj.choice_set.create(choice_id=j, choice_text=choice)
@@ -329,10 +331,13 @@ def deleteQuiz(request):
         host_quiz = Quiz.objects.get(quiz_host_id=host_id, quiz_id=quiz_id)
         host_quiz.delete()
 
-        client_quiz =  ClientQuiz.objects.filter(clientquiz_host_id=host_id, clientquiz_quiz_id=quiz_id)
-        client_quiz.delete()
-
+        client_quizzes =  ClientQuiz.objects.filter(clientquiz_host_id=host_id, clientquiz_quiz_id=quiz_id)
         
+        user_ids_to_update = client_quizzes.values_list("user", flat=True)
+        user_objs = User.objects.filter(id__in=user_ids_to_update)
+        user_objs.update(user_quizzes_joined=F('user_quizzes_joined') - 1)
+
+        client_quizzes.delete()
 
         return JsonResponse({"message": f"Quiz deleted successfully!"})
 
