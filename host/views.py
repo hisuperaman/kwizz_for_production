@@ -20,6 +20,9 @@ def username_required(view_func):
     def inner(request, *args, **kwargs):
         if request.session.get("uid"):
             user = User.objects.filter(user_uid=request.session.get("uid")).first()
+            if user is None:
+                request.session.pop("uid")
+                return redirect(reverse("login:index"))
             if user.user_username is None:
                 return redirect(reverse("login:welcome"))
         return view_func(request, *args, **kwargs)
