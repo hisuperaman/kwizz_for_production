@@ -80,6 +80,7 @@
     <script>
 
         let current_question = 0;
+        let question_idxs = [];
 
         let user_choices = {};
         let totalSeconds;
@@ -93,6 +94,10 @@
         let quiz_end_time;
 
         const leaveRoomURL = "{% url 'host:leave' %}";
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min) ) + min;
+        }
 
         document.getElementById("loaderOverlay").style.display = "block";
         document.getElementById("loader").style.display = "block";
@@ -116,9 +121,14 @@
             timerString = `${(minutes<10)?(0):("")}${minutes}:${(seconds<10)?(0):("")}${seconds}`;
             document.getElementById("timer").innerHTML = timerString;
 
+            question_idxs = Array.from(Array(data.question_set.length)).map((x, i)=>{return i});
+            current_question = question_idxs[getRandomNumber(0, question_idxs.length)];
+            question_idxs = question_idxs.filter(item => item !== current_question);
+
             // displaying data
             displayQuizData();
 
+            
             // hiding loader and displaying the content
             document.getElementById("loaderOverlay").style.display = "none";
             document.getElementById("loader").style.display = "none";
@@ -176,10 +186,13 @@
             user_choices[data.question_set[current_question].question_id] = parseInt(document.querySelector('input[name="selected_choice"]:checked').value);
 
             // console.log(user_choices)
-            current_question += 1;
+            current_question = question_idxs[getRandomNumber(0, question_idxs.length)];
+            question_idxs = question_idxs.filter(item => item !== current_question);
+            // current_question += 1;
+
             displayQuizData(data);
 
-            if(current_question+1 == data.question_set.length){
+            if(question_idxs.length==0){
                 document.getElementById("nextBtn").style.display = "none";
                 document.getElementById("submitBtn").style.display = "inline-block";
             }

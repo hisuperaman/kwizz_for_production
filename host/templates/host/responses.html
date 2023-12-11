@@ -127,7 +127,7 @@
 
                 let username_elem = document.createElement("td");
                 // username_elem.innerHTML=`<a href="#">${data[i].user.user_username}</a>`;
-                username_elem.innerHTML=`<a role="button" class="usernameLinks" style="text-decoration: underline blue; font-weight: bold;" data-bs-toggle="modal" data-bs-target="#clientProfileModal" onclick="usernameClick.call(this, event)">
+                username_elem.innerHTML=`<a role="button" class="usernameLinks" onclick="usernameClick.call(this, event)">
                                             ${data[i].user.user_username}
                                         </a>`;
                 row.appendChild(username_elem);
@@ -247,6 +247,8 @@
                 document.getElementById("clientQuizHosted").innerHTML = data.user_quizzes_hosted;
                 document.getElementById("clientQuizJoined").innerHTML = data.user_quizzes_joined;
 
+                const myModal = new bootstrap.Modal(document.getElementById('clientProfileModal'));
+                myModal.show();
                 document.getElementById("loaderOverlay").style.display = "none";
                 document.getElementById("loader").style.display = "none";
             })
