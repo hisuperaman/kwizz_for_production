@@ -80,6 +80,7 @@
     <script>
 
         let current_question = 0;
+        let question_num = 1;
         let question_idxs = [];
 
         let user_choices = {};
@@ -142,7 +143,7 @@
         function displayQuizData(){
 
             quizTitle.innerHTML = data.quiz_title;
-            document.getElementById("currentQuestion").innerHTML = current_question+1;
+            document.getElementById("currentQuestion").innerHTML = question_num;
             document.getElementById("totalQuestions").innerHTML = data.question_set.length;
             document.getElementById("question").innerHTML = data.question_set[current_question].question_text;
 
@@ -189,6 +190,7 @@
             current_question = question_idxs[getRandomNumber(0, question_idxs.length)];
             question_idxs = question_idxs.filter(item => item !== current_question);
             // current_question += 1;
+            question_num += 1;
 
             displayQuizData(data);
 
