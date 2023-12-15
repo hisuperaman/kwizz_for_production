@@ -184,6 +184,9 @@
 
 
         function nextBtnClick(){
+            if(document.querySelector('input[name="selected_choice"]:checked') == null ||document.querySelector('input[name="selected_choice"]:checked') == undefined){
+                return;
+            }
             user_choices[data.question_set[current_question].question_id] = parseInt(document.querySelector('input[name="selected_choice"]:checked').value);
 
             // console.log(user_choices)
@@ -201,6 +204,9 @@
         }
 
         function submitBtnClick(){
+            if(document.querySelector('input[name="selected_choice"]:checked') == null ||document.querySelector('input[name="selected_choice"]:checked') == undefined){
+                return;
+            }
             user_choices[data.question_set[current_question].question_id] = parseInt(document.querySelector('input[name="selected_choice"]:checked').value);
             // console.log(user_choices);
 
