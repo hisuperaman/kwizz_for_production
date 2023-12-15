@@ -19,12 +19,12 @@
             </h1>
             
             
+            <div>
+                <p id="timer" style="display: none; float: right;" class="my-2">00:00</p>
+            </div>
             
         </div>
 
-        <div>
-            <p id="timer" style="display: none; float: right;" class="my-2">00:00</p>
-        </div>
 
         <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
         <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999; display: block;">
@@ -82,7 +82,7 @@
             quizTitle.innerHTML = data.quiz_title;
 
 
-            let question_str = `<p>
+            let question_str = `<p class="mt-4">
                                     Q.<span></span>.
                                 </p>`;
             

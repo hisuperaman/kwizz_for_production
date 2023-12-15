@@ -21,11 +21,11 @@
             
             
             
+            <div>
+                <p id="timer" style="display: inline; float: right;" class="my-2">00:00</p>
+            </div>
         </div>
 
-        <div>
-            <p id="timer" style="display: inline; float: right;" class="my-2">00:00</p>
-        </div>
 
         <div id="loaderOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background: rgba(0, 0, 0, 0.5); display: block;"></div>
         <div class="spinner-border" id="loader" role="status" style="position: fixed; top: 45%; left: 45%; z-index: 9999; display: block;">
@@ -68,7 +68,7 @@
         .then(client_data=>{
             // saving client data
             saveClientData(client_data);
-            // console.log(client_data)
+            console.log(client_data)
 
             // displaying data
             for(let i=0; i<data.question_set.length; i++){
@@ -123,10 +123,10 @@
 
             let clientTimerComponents = clientTimerString[0].split(":");
             let clientTimerHours = clientTimerComponents[0];
-            let clientTimerMinutes = clientTimerComponents[1];
+            let clientTimerMinutes = parseInt(clientTimerComponents[1]) + (parseInt(clientTimerHours)*60);
             let clientTimerSeconds = clientTimerComponents[2];
 
-            let newClientTimer = `${clientTimerHours}:${clientTimerMinutes}:${clientTimerSeconds}`;
+            let newClientTimer = `${(clientTimerMinutes<10)?(0):("")}${clientTimerMinutes}:${(clientTimerSeconds<10)?(0):("")}${clientTimerSeconds}`;
             document.getElementById("timer").innerHTML = newClientTimer;
 
             (data.question_set[current_question].choice_set).forEach(choice => {
@@ -145,10 +145,12 @@
                 choiceEle.children[0].children[1].style.pointerEvents = "none";
 
                 try{
-                    let clientchoice_id = clientData.clientquestion_set[current_question].clientchoice_set[0].clientchoice_choice_id;
+                    // let clientchoice_id = clientData.clientquestion_set[current_question].clientchoice_set[0].clientchoice_choice_id;
+                    let clientchoice_id = clientData.clientquestion_set.find(element=>element["clientquestion_question_id"]==(current_question+1)).clientchoice_set[0].clientchoice_choice_id;
                     // console.log(clientchoice_id)
                     // console.log(choice.choice_id)
 
+                    console.log(clientchoice_id)
                     if(clientchoice_id == choice.choice_id){
                         choiceEle.children[0].children[0].checked = true;
                         choiceEle.children[0].children[1].innerHTML += `<span style="float: right;">
